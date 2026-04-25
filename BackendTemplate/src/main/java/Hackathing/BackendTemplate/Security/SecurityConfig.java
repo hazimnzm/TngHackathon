@@ -20,13 +20,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable()) //required for REST APIs
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //no cookies, use JWT
                 .authorizeHttpRequests(auth -> auth
+                    // public auth endpoints (login signup)
                         .requestMatchers("/auth/**").permitAll()
+                        // Swagger/OpenAPI Documentation (Public)
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        // Merchant Management (LOCKED) .authenticated()
                         .requestMatchers("/inventory/**").permitAll()
                         .requestMatchers("/item/**").permitAll()
+                        // Test Endpoints (Optional: Public)
                         .requestMatchers("/test/**").permitAll()
+                        //default fallback
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
