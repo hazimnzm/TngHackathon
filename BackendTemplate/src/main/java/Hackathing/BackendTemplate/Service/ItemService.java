@@ -14,7 +14,6 @@ public class ItemService {
     public Item createItem(ItemDTO itemDTO) {
         Item item = ItemDTO.DTOToDO(itemDTO);
         Item savedItem = itemRepository.save(item);
-        savedItem.setUrl(generateURL(savedItem.getId()));
         return itemRepository.save(savedItem);
     }
 
@@ -29,14 +28,5 @@ public class ItemService {
         }
         item.setCount(count);
         return itemRepository.save(item);
-    }
-
-    public String getURL(long id) {
-        Item item = itemRepository.findById(id).orElse(null);
-        return item == null ? null : item.getUrl();
-    }
-
-    private String generateURL(long itemId){
-        return "http://localhost:8080/item/purchase/" + itemId;
     }
 }

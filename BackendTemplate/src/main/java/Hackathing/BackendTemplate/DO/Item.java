@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class Item extends DO {
     private String name;
-    private String url;
     private double count;
     private double price;
     private long inventoryId;

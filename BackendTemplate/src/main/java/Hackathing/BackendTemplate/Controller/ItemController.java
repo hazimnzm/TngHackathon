@@ -30,11 +30,4 @@ public class ItemController {
     public Item updateQuantity(@PathVariable long id, @RequestParam double count) {
         return itemService.updateQuantity(id, count);
     }
-
-    @GetMapping("/{id}/url")
-    public Map<String, String> getURL(@PathVariable long id) {
-        Map<String, String> response = new LinkedHashMap<>();
-        response.put("url", itemService.getURL(id));
-        return response;
-    }
 }
