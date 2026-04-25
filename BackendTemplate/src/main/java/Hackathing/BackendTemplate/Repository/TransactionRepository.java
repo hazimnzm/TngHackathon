@@ -26,4 +26,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Query("SELECT COALESCE(SUM(t.amount), 0.0) FROM Transaction t WHERE t.inventoryId = :inventoryId")
     Double sumAmountByInventoryId(@Param("inventoryId") long inventoryId);
+
+    List<Transaction> findByInventoryIdAndCreatedAtAfter(long inventoryId, LocalDateTime sevenDaysAgo);
 }

@@ -30,7 +30,7 @@ public class ChatController {
         @RequestBody ChatRequest request
     ) throws Exception {
         // Pull live data from existing inventory system
-        MerchantData data = inventoryService.getMerchantSnapshot(); //no argument
+        MerchantData data = inventoryService.getMerchantSnapshot(request.getInventoryId()); //no argument
         String answer = qwenService.getInsight(request.getMessage(), data);
         return ResponseEntity.ok(Map.of("reply", answer));
     }

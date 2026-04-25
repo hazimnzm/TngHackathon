@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -123,10 +124,9 @@ public class InventoryService {
     }
 
     //assembling a snapshot of merchant business data to feed into QWEN
-    public MerchantData getMerchantSnapshot() throws Exception {
+    public MerchantData getMerchantSnapshot(long inventoryId) throws Exception {
 
         // reuse your existing helper — reads email from JWT token
-        long merchantId = requireCurrentMerchantId();
 
         // get merchant details for the name
         Merchant merchant = merchantRepository.findByEmail(
@@ -134,12 +134,12 @@ public class InventoryService {
         ).orElseThrow(() -> new IllegalArgumentException("Merchant not found"));
 
         // get all inventories for this merchant
-        List<Inventory> inventories = inventoryRepository.findByMerchantId(merchantId);
+        Inventory inventory = inventoryRepository.findById(inventoryId).orElse(null);
 
         // get transactions from last 7 days
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
         List<Transaction> recentTransactions = transactionRepository
-            .findByInventory_MerchantIdAndCreatedAtAfter(merchantId, sevenDaysAgo);
+            .findByInventoryIdAndCreatedAtAfter(inventoryId, sevenDaysAgo);
 
         // find top selling item
         String topSellingItem = recentTransactions.stream()
@@ -153,18 +153,28 @@ public class InventoryService {
             .orElse("N/A");
 
         // find low stock items
-        String lowStockItems = recentTransactions.stream()
-            .filter(t -> t.getItemCount() != null && t.getItemCount() <= 5)
-            .map(Transaction::getItemName)
-            .distinct()
-            .collect(Collectors.joining(", "));
+        String lowStockItems = getLowStockItem(inventoryId);
 
         return MerchantData.builder()
-            .totalItems(inventories.size())
-            .inventoryJson(objectMapper.writeValueAsString(inventories))
+//            .totalItems(inventories.size())
+            .inventoryJson(objectMapper.writeValueAsString(inventory))
             .recentTransactionJson(objectMapper.writeValueAsString(recentTransactions))
             .topSellingItem(topSellingItem)
             .lowStockItems(lowStockItems.isEmpty() ? "None" : lowStockItems)
             .build();
+    }
+
+    public String getLowStockItem(long inventoryId) {
+        List<Item> items = itemRepository.findByInventoryId(inventoryId);
+
+        List<String> lowStockNames = new ArrayList<>();
+
+        for (Item i : items) {
+            if (i.getCount() <= 5) {
+                lowStockNames.add(i.getName());
+            }
+        }
+
+        return String.join(", ", lowStockNames);
     }
 }

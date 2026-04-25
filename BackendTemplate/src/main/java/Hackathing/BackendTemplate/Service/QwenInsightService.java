@@ -96,7 +96,6 @@ public class QwenInsightService {
                 All amounts are in MYR.
     
                 === MERCHANT DATA ===
-                Total Items: %d
                 
                 Inventory:
                 %s
@@ -108,7 +107,6 @@ public class QwenInsightService {
                 Low Stock Items: %s
                 ===
                 """.formatted(
-                    data.getTotalItems(),
                     data.getInventoryJson()          != null ? data.getInventoryJson()          : "No inventory data",
                     data.getRecentTransactionJson() != null ? data.getRecentTransactionJson() : "No transactions yet",
                     data.getTopSellingItem()         != null ? data.getTopSellingItem()         : "N/A",

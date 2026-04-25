@@ -10,10 +10,10 @@ import lombok.EqualsAndHashCode;
 @Table(name = "transactions")
 @EqualsAndHashCode(callSuper = true)
 public class Transaction extends DO {
-    private long inventoryId;
+    private Long inventoryId;
     private String person;
     private String itemName;
-    private long itemCount;
+    private Long itemCount;
     private String category;
     private String type;
     private double amount;

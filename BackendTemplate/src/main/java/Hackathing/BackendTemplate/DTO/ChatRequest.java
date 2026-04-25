@@ -4,6 +4,7 @@ import lombok.Data;
 @Data
 public class ChatRequest {
     private String message;
+    private Long inventoryId;
 
     public String getMessage() {  // needs this
         return message;
