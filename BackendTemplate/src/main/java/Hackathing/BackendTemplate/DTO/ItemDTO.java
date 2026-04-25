@@ -12,6 +12,7 @@ public class ItemDTO {
     private double count;
     private double price;
     private long inventoryId;
+    private Long id;
 
     public static ItemDTO DOToDTO(Item item) {
         return new ItemDTO(
@@ -19,7 +20,8 @@ public class ItemDTO {
                 item.getUrl(),
                 item.getCount(),
                 item.getPrice(),
-                item.getInventoryId()
+                item.getInventoryId(),
+                item.getId()
         );
     }
 
