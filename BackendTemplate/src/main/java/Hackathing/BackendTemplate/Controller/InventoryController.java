@@ -42,7 +42,7 @@ public class InventoryController {
 
     // update item details for currently logged-in merchant
     //every merchant can only update their own items
-    @PutMapping("/my/items/{itemId}")
+    @PutMapping("/update/items/{itemId}")
     public Item updateMyItem(@PathVariable long itemId, @RequestBody ItemUpdateRequest req) {
         try {
             return inventoryService.updateItemDetailsForCurrentMerchant(itemId, req);

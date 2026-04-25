@@ -73,9 +73,6 @@ public class InventoryService {
         if (req.getName() != null) {
             item.setName(req.getName());
         }
-        if (req.getCount() != null) {
-            item.setCount(req.getCount());
-        }
         if (req.getPrice() != null) {
             item.setPrice(req.getPrice());
         }
