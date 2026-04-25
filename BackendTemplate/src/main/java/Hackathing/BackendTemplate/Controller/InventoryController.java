@@ -1,16 +1,24 @@
 package Hackathing.BackendTemplate.Controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import Hackathing.BackendTemplate.DO.Inventory;
+import Hackathing.BackendTemplate.DTO.InventoryDTO;
+import Hackathing.BackendTemplate.Service.InventoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/inventory")
 public class InventoryController {
+    @Autowired
+    private InventoryService inventoryService;
 
-    @GetMapping("/ping")
-    public String ping() {
-        return "inventory-ok";
+    @PostMapping
+    public Inventory createInventory(@RequestBody InventoryDTO inventoryDTO) {
+        return inventoryService.createInventory(inventoryDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteInventory(@PathVariable long id) {
+        inventoryService.deleteInventory(id);
     }
 }
-
