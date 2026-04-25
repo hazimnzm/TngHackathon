@@ -36,18 +36,14 @@ public class InventoryService {
     }
 
 
-    public List<Item> getItemsForCurrentMerchant() {
+    public List<Item> getItemsForCurrentMerchantInventory(long inventoryId) {
         long merchantId = requireCurrentMerchantId();
-        List<Long> inventoryIds = inventoryRepository.findByMerchantId(merchantId)
-                .stream()
-                .map(Inventory::getId)
-                .toList();
-
-        if (inventoryIds.isEmpty()) {
-            return List.of();
+        Inventory inventory = inventoryRepository.findById(inventoryId)
+                .orElseThrow(() -> new IllegalArgumentException("Inventory not found"));
+        if (!Long.valueOf(inventory.getMerchantId()).equals(merchantId)) {
+            throw new IllegalArgumentException("Inventory does not belong to current merchant");
         }
-
-        return itemRepository.findByInventoryIdIn(inventoryIds);
+        return itemRepository.findByInventoryId(inventoryId);
     }
 
     @Transactional

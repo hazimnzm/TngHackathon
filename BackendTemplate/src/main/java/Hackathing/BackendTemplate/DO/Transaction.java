@@ -7,12 +7,14 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "items")
+@Table(name = "transactions")
 @EqualsAndHashCode(callSuper = true)
-public class Item extends DO {
-    private String name;
-    private double count;
-    private double price;
-    private String category;
+public class Transaction extends DO {
     private long inventoryId;
+    private String person;
+    private String itemName;
+    private long itemCount;
+    private String category;
+    private String type;
+    private double amount;
 }

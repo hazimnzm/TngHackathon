@@ -10,6 +10,7 @@ public class ItemDTO {
     private String name;
     private double count;
     private double price;
+    private String category;
     private long inventoryId;
     private Long id;
 
@@ -18,6 +19,7 @@ public class ItemDTO {
                 item.getName(),
                 item.getCount(),
                 item.getPrice(),
+                item.getCategory(),
                 item.getInventoryId(),
                 item.getId()
         );
@@ -28,6 +30,7 @@ public class ItemDTO {
         item.setName(itemDTO.getName());
         item.setCount(itemDTO.getCount());
         item.setPrice(itemDTO.getPrice());
+        item.setCategory(itemDTO.getCategory());
         item.setInventoryId(itemDTO.getInventoryId());
         return item;
     }

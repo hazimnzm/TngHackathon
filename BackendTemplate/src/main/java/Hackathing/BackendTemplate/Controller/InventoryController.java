@@ -31,12 +31,15 @@ public class InventoryController {
     }
 
     // get all items for currently logged-in merchant //merchant's inventory
-    @GetMapping("/my/items")
-    public List<Item> getMyItems() {
+    @GetMapping("/my/items/{inventoryId}")
+    public List<Item> getMyItems(@PathVariable long inventoryId) {
         try {
-            return inventoryService.getItemsForCurrentMerchant();
+            return inventoryService.getItemsForCurrentMerchantInventory(inventoryId);
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            HttpStatus status = "Not authenticated".equalsIgnoreCase(e.getMessage())
+                    ? HttpStatus.UNAUTHORIZED
+                    : ("Inventory not found".equalsIgnoreCase(e.getMessage()) ? HttpStatus.NOT_FOUND : HttpStatus.FORBIDDEN);
+            throw new ResponseStatusException(status, e.getMessage());
         }
     }
 
