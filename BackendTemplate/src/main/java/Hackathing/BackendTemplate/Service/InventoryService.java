@@ -4,6 +4,7 @@ import Hackathing.BackendTemplate.DO.Inventory;
 import Hackathing.BackendTemplate.DO.Item;
 import Hackathing.BackendTemplate.DO.Merchant;
 import Hackathing.BackendTemplate.DTO.ItemDTO;
+import Hackathing.BackendTemplate.DO.Merchant;
 import Hackathing.BackendTemplate.DTO.ItemUpdateRequest;
 import Hackathing.BackendTemplate.DTO.InventoryDTO;
 import Hackathing.BackendTemplate.DTO.MerchantData;
