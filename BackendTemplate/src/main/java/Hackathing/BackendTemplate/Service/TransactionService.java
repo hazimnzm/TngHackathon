@@ -4,7 +4,6 @@ import Hackathing.BackendTemplate.DO.Transaction;
 import Hackathing.BackendTemplate.DTO.TransactionDTO;
 import Hackathing.BackendTemplate.DTO.TransactionGroupDTO;
 import Hackathing.BackendTemplate.Repository.TransactionRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

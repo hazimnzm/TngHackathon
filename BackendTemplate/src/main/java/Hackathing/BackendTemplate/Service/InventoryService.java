@@ -46,7 +46,11 @@ public class InventoryService {
         }
         InventoryDTO inventoryDTO = InventoryDTO.DOToDTO(inventory);
         List<Item> items = itemRepository.findByInventoryId(inventoryId);
+        String merchantName = merchantRepository.findById(merchantId)
+                .orElseThrow(() -> new IllegalArgumentException("Merchant not found"))
+                .getDisplayName();
         inventoryDTO.setItems(items.stream().map(ItemDTO::DOToDTO).toList());
+        inventoryDTO.setMerchantName(merchantName);
         return inventoryDTO;
     }
 

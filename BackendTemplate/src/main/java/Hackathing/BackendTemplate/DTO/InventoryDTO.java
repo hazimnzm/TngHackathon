@@ -10,11 +10,12 @@ import java.util.List;
 @AllArgsConstructor
 public class InventoryDTO {
     private long merchantId;
+    private String merchantName;
     private Long id;
     private List<ItemDTO> items;
 
     public static InventoryDTO DOToDTO(Inventory inventory) {
-        return new InventoryDTO(inventory.getMerchantId(), inventory.getId(), null);
+        return new InventoryDTO(inventory.getMerchantId(), null, inventory.getId(), null);
     }
 
     public static Inventory DTOToDO(InventoryDTO inventoryDTO) {
