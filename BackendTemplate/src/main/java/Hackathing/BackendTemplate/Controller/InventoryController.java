@@ -32,9 +32,9 @@ public class InventoryController {
 
     // get all items for currently logged-in merchant //merchant's inventory
     @GetMapping("/my/items/{inventoryId}")
-    public List<Item> getMyItems(@PathVariable long inventoryId) {
+    public InventoryDTO getMyItems(@PathVariable long inventoryId) {
         try {
-            return inventoryService.getItemsForCurrentMerchantInventory(inventoryId);
+            return inventoryService.getInventoryForCurrentMerchantInventory(inventoryId);
         } catch (IllegalArgumentException e) {
             HttpStatus status = "Not authenticated".equalsIgnoreCase(e.getMessage())
                     ? HttpStatus.UNAUTHORIZED

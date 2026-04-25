@@ -2,6 +2,7 @@ package Hackathing.BackendTemplate.Service;
 
 import Hackathing.BackendTemplate.DO.Inventory;
 import Hackathing.BackendTemplate.DO.Item;
+import Hackathing.BackendTemplate.DTO.ItemDTO;
 import Hackathing.BackendTemplate.DTO.ItemUpdateRequest;
 import Hackathing.BackendTemplate.DTO.InventoryDTO;
 import Hackathing.BackendTemplate.Repository.InventoryRepository;
@@ -36,14 +37,17 @@ public class InventoryService {
     }
 
 
-    public List<Item> getItemsForCurrentMerchantInventory(long inventoryId) {
+    public InventoryDTO getInventoryForCurrentMerchantInventory(long inventoryId) {
         long merchantId = requireCurrentMerchantId();
         Inventory inventory = inventoryRepository.findById(inventoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Inventory not found"));
         if (!Long.valueOf(inventory.getMerchantId()).equals(merchantId)) {
             throw new IllegalArgumentException("Inventory does not belong to current merchant");
         }
-        return itemRepository.findByInventoryId(inventoryId);
+        InventoryDTO inventoryDTO = InventoryDTO.DOToDTO(inventory);
+        List<Item> items = itemRepository.findByInventoryId(inventoryId);
+        inventoryDTO.setItems(items.stream().map(ItemDTO::DOToDTO).toList());
+        return inventoryDTO;
     }
 
     @Transactional
