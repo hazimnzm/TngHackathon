@@ -13,8 +13,9 @@ public class ItemService {
 
     public Item createItem(ItemDTO itemDTO) {
         Item item = ItemDTO.DTOToDO(itemDTO);
-        item.setUrl(generateURL(item.getId()));
-        return itemRepository.save(item);
+        Item savedItem = itemRepository.save(item);
+        savedItem.setUrl(generateURL(savedItem.getId()));
+        return itemRepository.save(savedItem);
     }
 
     public void deleteItem(long id) {
