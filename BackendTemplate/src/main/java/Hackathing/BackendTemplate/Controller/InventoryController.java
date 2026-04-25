@@ -21,4 +21,8 @@ public class InventoryController {
     public void deleteInventory(@PathVariable long id) {
         inventoryService.deleteInventory(id);
     }
+    @GetMapping("/test")
+    public String test() {
+      return "Inventory path is reachable!";
+}
 }
