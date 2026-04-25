@@ -8,7 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class InventoryDTO {
     private long merchantId;
-    private long id;
+    private Long id;
 
     public static InventoryDTO DOToDTO(Inventory inventory) {
         return new InventoryDTO(inventory.getMerchantId(), inventory.getId());
@@ -17,7 +17,6 @@ public class InventoryDTO {
     public static Inventory DTOToDO(InventoryDTO inventoryDTO) {
         Inventory inventory = new Inventory();
         inventory.setMerchantId(inventoryDTO.getMerchantId());
-        inventory.setId(inventoryDTO.getId());
         return inventory;
     }
 }

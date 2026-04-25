@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/inventory/**").permitAll()
+                        .requestMatchers("/item/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
                         .anyRequest().permitAll()
                 )

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "Inventory")
+@Table(name = "inventories")
 @EqualsAndHashCode(callSuper = true)
 public class Inventory extends DO {
     long merchantId;
