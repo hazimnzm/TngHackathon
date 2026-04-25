@@ -4,6 +4,7 @@ import Hackathing.BackendTemplate.DO.Transaction;
 import Hackathing.BackendTemplate.DTO.TransactionDTO;
 import Hackathing.BackendTemplate.DTO.TransactionGroupDTO;
 import Hackathing.BackendTemplate.Repository.TransactionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +12,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,47 +47,62 @@ public class TransactionService {
     }
 
     public List<TransactionGroupDTO> getProfitLoss(long inventoryId, String timeFilter, String typeFilter) {
-        // Default timeFilter to "month" if null/empty
-        if (timeFilter == null || timeFilter.trim().isEmpty()) {
-            timeFilter = "month";
-        }
+        // 1. Defaults
+        if (timeFilter == null || timeFilter.trim().isEmpty()) timeFilter = "month";
         String normalizedTimeFilter = timeFilter.trim().toLowerCase();
-        if (!normalizedTimeFilter.equals("day") && !normalizedTimeFilter.equals("week") && !normalizedTimeFilter.equals("month")) {
-            throw new IllegalArgumentException("timeFilter must be one of: day, week, month");
-        }
 
-        // Fetch all transactions for the inventoryId
+        // Check if we should ignore types
+        boolean shouldGroupByType = typeFilter != null && !typeFilter.isBlank();
+
+        // 2. Fetch Data
         List<Transaction> allTransactions = transactionRepository.findByInventoryIdOrderByCreatedAtDesc(inventoryId);
 
-        // Filter by typeFilter if provided
-        if (typeFilter != null && !typeFilter.isBlank()) {
-            allTransactions = allTransactions.stream()
-                    .filter(t -> typeFilter.equals(t.getType()))
-                    .collect(Collectors.toList());
-        }
+        // 3. Dynamic Grouping Logic
+        // The key here will be either "04/2026" OR "04/2026|Food"
+        Map<String, List<Transaction>> grouped = new LinkedHashMap<>();
 
-        // Group by time period, then by type
-        Map<String, Map<String, List<Transaction>>> grouped = new LinkedHashMap<>();
         for (Transaction t : allTransactions) {
             String periodKey = getPeriodKey(t, normalizedTimeFilter);
-            String type = normalizeType(t.getType());
-            grouped.computeIfAbsent(periodKey, k -> new LinkedHashMap<>())
-                    .computeIfAbsent(type, k -> new ArrayList<>())
-                    .add(t);
+            String finalKey = periodKey;
+
+            if (shouldGroupByType) {
+                String typeValue = "category".equalsIgnoreCase(typeFilter) ? t.getCategory() : t.getItemName();
+                if (typeValue == null || typeValue.isEmpty()) typeValue = "Uncategorized";
+                // Combine period and type into one unique grouping key
+                finalKey = periodKey + "|" + typeValue;
+            }
+
+            grouped.computeIfAbsent(finalKey, k -> new ArrayList<>()).add(t);
         }
 
-        // Flatten to list of TransactionGroupDTO, sorted by period key descending
+        // 4. Transform to DTO
         List<TransactionGroupDTO> result = new ArrayList<>();
-        grouped.entrySet().stream()
-                .sorted(Map.Entry.<String, Map<String, List<Transaction>>>comparingByKey().reversed())
-                .forEach(periodEntry -> {
-                    String periodLabel = getPeriodLabel(periodEntry.getKey(), normalizedTimeFilter);
-                    periodEntry.getValue().forEach((type, trans) -> {
-                        List<TransactionDTO> dtos = trans.stream().map(TransactionDTO::DOToDTO).collect(Collectors.toList());
-                        double total = trans.stream().mapToDouble(Transaction::getAmount).sum();
-                        result.add(new TransactionGroupDTO(periodLabel, type, total, dtos));
-                    });
-                });
+
+        grouped.forEach((compositeKey, transList) -> {
+            String periodLabel;
+            String typeLabel;
+
+            if (shouldGroupByType) {
+                // Split back the composite key
+                String[] parts = compositeKey.split("\\|");
+                periodLabel = getPeriodLabel(parts[0], normalizedTimeFilter);
+                typeLabel = parts[1];
+            } else {
+                periodLabel = getPeriodLabel(compositeKey, normalizedTimeFilter);
+                typeLabel = "All Transactions";
+            }
+
+            double total = transList.stream().mapToDouble(Transaction::getAmount).sum();
+            List<TransactionDTO> dtos = transList.stream()
+                    .map(TransactionDTO::DOToDTO)
+                    .collect(Collectors.toList());
+
+            result.add(new TransactionGroupDTO(periodLabel, typeLabel, total, dtos));
+        });
+
+        // Sort result: Newest time first, then by type label
+        result.sort(Comparator.comparing(TransactionGroupDTO::getTimeRange).reversed()
+                .thenComparing(TransactionGroupDTO::getType));
 
         return result;
     }
@@ -173,6 +186,11 @@ public class TransactionService {
             }
             default -> throw new IllegalArgumentException("Invalid timeFilter");
         };
+    }
+
+    public Double getTotalNetProfitLoss(long inventoryId) {
+        // This will return a single double value (e.g., 3850.50 or -120.00)
+        return transactionRepository.sumAmountByInventoryId(inventoryId);
     }
 
     private String normalizeType(String type) {

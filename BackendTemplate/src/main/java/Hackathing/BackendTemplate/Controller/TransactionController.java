@@ -6,10 +6,7 @@ import Hackathing.BackendTemplate.DTO.TransactionProfitLossResponse;
 import Hackathing.BackendTemplate.DTO.TransactionQueryRequest;
 import Hackathing.BackendTemplate.Service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/transaction")
@@ -38,5 +35,10 @@ public class TransactionController {
                         request.getTypeFilter()
                 )
         );
+    }
+
+    @GetMapping("/{inventoryId}/total-pl")
+    public Double getTotalPL(@PathVariable long inventoryId) {
+        return transactionService.getTotalNetProfitLoss(inventoryId);
     }
 }
