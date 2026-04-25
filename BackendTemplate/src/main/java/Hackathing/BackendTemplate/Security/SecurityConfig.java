@@ -2,6 +2,7 @@ package Hackathing.BackendTemplate.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,10 +29,12 @@ public class SecurityConfig {
                         // Swagger/OpenAPI Documentation (Public)
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // Merchant Management (LOCKED) .authenticated()
-                        .requestMatchers("/inventory/**").permitAll()
-                        .requestMatchers("/item/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/inventory/**").authenticated()
+                        .requestMatchers("/item/**").authenticated()
+                        .requestMatchers("/my/items/**").permitAll()
                         // Test Endpoints (Optional: Public)
-                        .requestMatchers("/test/**").permitAll()
+                        .requestMatchers("/test/**").authenticated()
+                        .requestMatchers(HttpMethod.POST).permitAll()
                         //default fallback
                         .anyRequest().permitAll()
                 )
