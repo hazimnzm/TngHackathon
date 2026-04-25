@@ -18,10 +18,9 @@ public class QRService {
         String link = generateFetchLink(inventoryId);
         return convertLinkToQrBase64(link);
     }
-
-    // TODO: implement inventoryId -> fetch link conversion
+    
     public String generateFetchLink(long inventoryId) {
-        return "https://www.youtube.com/watch?v=s6H6ffS6zJI&list=RDZHiU96iAffo&index=2";
+        return "/my/items/" + inventoryId;
     }
 
     public String convertLinkToQrBase64(String link) {
